@@ -43,7 +43,7 @@ func ParseProvinceScores(resp *http.Response) (int, error) {
 		log.Println("ERROR DECODE:", err)
 		return 0, err
 	}
-	log.Println(gr.Total)
+	log.Println("Province", pRecord, gr.Total)
 	// fmt.Println(gr.Schools)
 	for _, v := range gr.Schools {
 		models.AddProvinceScore(v)
@@ -62,7 +62,7 @@ func getScores(page int) (int, error) {
 	resp, err := http.Get(uriBuf.String())
 	if err != nil {
 		log.Println("ERROR GET:", uriBuf.String(), err)
-		if isExit(page) {
+		if pRecord.isExit(page) {
 			os.Exit(-1)
 		}
 		return getScores(page)

@@ -17,18 +17,18 @@ type (
 	}
 )
 
-func isExit(page int) bool {
-	if total.Page != page {
-		total.Count = 0
-		total.Page = page
+func (e eRecord) isExit(page int) bool {
+	if e.Page != page {
+		e.Count = 0
+		e.Page = page
 		return false
 	}
-	total.Count++
-	return total.Count >= 3
+	e.Count++
+	return e.Count >= 3
 }
 
 func sleep() {
-	sleeps := [6]time.Duration{1, 2, 3, 2, 3, 4}
+	sleeps := [6]time.Duration{1, 2, 3, 2, 3, 1}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := r.Intn(6)
 
