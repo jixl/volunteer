@@ -3,6 +3,7 @@ package scores
 import (
 	"log"
 	"math/rand"
+	// "net/http"
 	"time"
 )
 
@@ -35,3 +36,8 @@ func sleep() {
 	log.Println("SLEEP:", sleeps[index])
 	time.Sleep(sleeps[index] * time.Second)
 }
+
+// type spider interface {
+// 	scores(uri string) (int, error)
+// 	parse(resp *http.Response) (int, error)
+// }

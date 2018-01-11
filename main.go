@@ -23,10 +23,19 @@ func main() {
 	// var uri = "http://data.api.gkcx.eol.cn/soudaxue/queryProvinceScore.html?messtype=json&size=50&page="
 	// spider.ProxySpider(uri)
 	// fmt.Println(spider.ProxyServers);
-	scores.Province()
+	// go scores.Province()
+	// go scores.Specialty()
+	// scores.Province()
+	scores.Specialty()
 	// proxy()
 	// getIp("http://60.160.186.86:61234")
 	// start()
+}
+
+type tgo struct {
+	username string
+	age      int
+	address  string
 }
 
 // func proxy() {
