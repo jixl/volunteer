@@ -26,6 +26,8 @@ type SpecialtyScore struct {
 	FirstRate      interface{}   `bson:"firstrate" json:"firstrate"`
 	FirstRateClass interface{}   `bson:"firstrateclass" json:"firstrateclass"`
 	URL            string        `bson:"url" json:"url"`
+	Zytype         string        `bson:"zytype"`
+	SchoolType     string        `bson:"schooltype"`
 }
 
 func (bean SpecialtyScore) getTableName() string { return "specialty_score" }

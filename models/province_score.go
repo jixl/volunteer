@@ -26,6 +26,7 @@ type ProvinceScore struct {
 	Fencha        json.Number   `bson:"fencha" json:"fencha"`
 	ProvinceScore interface{}   `bson:"provincescore" json:"provincescore"`
 	URL           string        `bson:"url" json:"url"`
+	SchoolType    string        `bson:"schooltype"`
 }
 
 func (bean ProvinceScore) getTableName() string { return "province_score" }

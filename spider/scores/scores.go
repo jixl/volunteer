@@ -14,11 +14,11 @@ type (
 
 	eRecord struct {
 		Count int
-		Page  int
+		Page  string
 	}
 )
 
-func (e eRecord) isExit(page int) bool {
+func (e eRecord) isExit(page string) bool {
 	if e.Page != page {
 		e.Count = 0
 		e.Page = page

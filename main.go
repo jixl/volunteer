@@ -25,8 +25,8 @@ func main() {
 	// fmt.Println(spider.ProxyServers);
 	// go scores.Province()
 	// go scores.Specialty()
-	// scores.Province()
 	scores.Specialty()
+	scores.Province()
 	// proxy()
 	// getIp("http://60.160.186.86:61234")
 	// start()
