@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 
-	"volunteer/models"
+	"github.com/jixl/volunteer/models"
 )
 
 type SpecialtyResponse struct {

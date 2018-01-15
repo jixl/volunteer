@@ -11,7 +11,7 @@ import (
 	// "net/url"
 
 	// "volunteer/spider"
-	"volunteer/spider/scores"
+	"github.com/jixl/volunteer/spider/scores"
 )
 
 func main() {
