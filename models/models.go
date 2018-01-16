@@ -2,6 +2,7 @@ package models
 
 import (
 	"gopkg.in/mgo.v2"
+	"log"
 )
 
 const URL = "127.0.0.1:27017" //mongodb连接字符串
@@ -41,6 +42,22 @@ func witchCollection(collection string, s func(*mgo.Collection) error) error {
 	defer session.Close()
 	c := session.DB(dataBase).C(collection)
 	return s(c)
+}
+
+type model interface {
+	getTableName() string
+}
+
+func save(m model) string {
+	query := func(c *mgo.Collection) error { return c.Insert(m) }
+
+	err := witchCollection(m.getTableName(), query)
+	if err != nil {
+		log.Println("ERROR INSERT:", m.getTableName(), m, err)
+		return "false"
+	}
+
+	return "true"
 }
 
 // /**

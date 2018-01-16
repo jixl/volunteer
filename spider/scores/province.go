@@ -6,17 +6,17 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/jixl/volunteer/models"
 )
 
 type ProvinceResponse struct {
-	page     int
-	category string
-	Schools  []models.ProvinceScore `json:"school"`
-	Total    total                  `json:"totalRecord"`
+	page      int
+	category  string
+	execCount int
+	Schools   []models.ProvinceScore `json:"school"`
+	Total     total                  `json:"totalRecord"`
 }
 
 func Province() {
@@ -31,8 +31,8 @@ func Province() {
 
 func oneProvince(cate string) {
 	fPage := 1
-	pResp := ProvinceResponse{page: fPage, category: cate}
-	count, err := pResp.scores()
+	pResp := ProvinceResponse{page: fPage, category: cate, execCount: 0}
+	count, err := spiderScores(pResp)
 	if err != nil {
 		log.Println("ERROR:", err)
 	}
@@ -41,8 +41,9 @@ func oneProvince(cate string) {
 	log.Println(cate, nums, count)
 
 	for index := fPage + 1; index <= nums; index++ {
-		pResp = ProvinceResponse{page: index, category: cate}
-		pResp.scores()
+		pResp = ProvinceResponse{page: index, category: cate, execCount: 0}
+		count, _ = spiderScores(pResp)
+		log.Println("Province", index, count)
 	}
 }
 
@@ -58,14 +59,13 @@ func (obj ProvinceResponse) getURI() string {
 	return uriBuf.String()
 }
 
-func (data *ProvinceResponse) parse(resp *http.Response) (int, error) {
+func (data ProvinceResponse) parse(resp *http.Response) (int, error) {
 	defer resp.Body.Close()
-	err := json.NewDecoder(resp.Body).Decode(data)
+	err := json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println("ERROR DECODE:", err)
 		return 0, err
 	}
-	log.Println("Province", pRecord, data.Total)
 	for _, v := range data.Schools {
 		v.SchoolType = data.category
 		v.Save()
@@ -73,24 +73,7 @@ func (data *ProvinceResponse) parse(resp *http.Response) (int, error) {
 	return strconv.Atoi(data.Total.Count)
 }
 
-func (p *ProvinceResponse) sleep() {
-	sleep()
-}
-
-var pRecord = eRecord{0, ""}
-
-func (p *ProvinceResponse) scores() (int, error) {
-	p.sleep()
-	uri := p.getURI()
-	resp, err := http.Get(uri)
-	log.Println(uri)
-	if err != nil {
-		log.Println("ERROR GET: ", uri, err)
-		if sRecord.isExit(uri) {
-			os.Exit(-1)
-		}
-		return p.scores()
-	}
-
-	return p.parse(resp)
+func (obj ProvinceResponse) isExit() bool {
+	obj.execCount++
+	return obj.execCount >= 3
 }

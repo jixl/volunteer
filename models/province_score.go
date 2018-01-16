@@ -2,12 +2,8 @@ package models
 
 import (
 	"encoding/json"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
-
-const table = "province_score"
 
 type ProvinceScore struct {
 	Id            bson.ObjectId `bson:"_id,omitempty"`
@@ -42,16 +38,5 @@ func (bean ProvinceScore) Save() string {
 		bean.ProvinceScore = nil
 	}
 
-	query := func(c *mgo.Collection) error {
-		log.Println(bean)
-		return c.Insert(bean)
-	}
-
-	err := witchCollection(bean.getTableName(), query)
-	if err != nil {
-		log.Println("ERROR INSERT:", bean.getTableName(), bean, err)
-		return "false"
-	}
-
-	return "true"
+	return save(bean)
 }

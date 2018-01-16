@@ -2,11 +2,11 @@ package spider
 
 import (
 	"fmt"
+	"github.com/jixl/volunteer/spider/scores"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
-	"volunteer/spider/scores"
 )
 
 var (

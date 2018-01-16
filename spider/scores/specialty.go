@@ -6,17 +6,17 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/jixl/volunteer/models"
 )
 
 type SpecialtyResponse struct {
-	page     int
-	category string
-	Schools  []models.SpecialtyScore `json:"school"`
-	Total    total                   `json:"totalRecord"`
+	page      int
+	category  string
+	execCount int
+	Schools   []models.SpecialtyScore `json:"school"`
+	Total     total                   `json:"totalRecord"`
 }
 
 func Specialty() {
@@ -33,8 +33,8 @@ func Specialty() {
 }
 func oneSpecialty(cate string) {
 	fPage := 1
-	sResp := SpecialtyResponse{page: fPage, category: cate}
-	count, err := sResp.scores()
+	sResp := SpecialtyResponse{page: fPage, category: cate, execCount:0}
+	count, err := spiderScores(sResp)
 	if err != nil {
 		log.Println("ERROR:", err)
 	}
@@ -42,8 +42,9 @@ func oneSpecialty(cate string) {
 	nums := (count / 50) + 1
 	log.Println(cate, nums, count)
 	for index := fPage + 1; index <= nums; index++ {
-		sResp = SpecialtyResponse{page: index, category: cate}
-		sResp.scores()
+		sResp = SpecialtyResponse{page: index, category: cate, execCount:0}
+		count, _ = spiderScores(sResp)
+		log.Println("Province", index, count)
 	}
 }
 
@@ -59,14 +60,13 @@ func (s SpecialtyResponse) getURI() string {
 	return uriBuf.String()
 }
 
-func (data *SpecialtyResponse) parse(resp *http.Response) (int, error) {
+func (data SpecialtyResponse) parse(resp *http.Response) (int, error) {
 	defer resp.Body.Close()
-	err := json.NewDecoder(resp.Body).Decode(data)
+	err := json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println("ERROR DECODE:", err)
 		return 0, err
 	}
-	log.Println("Specialty:", sRecord, data.Total)
 	for _, v := range data.Schools {
 		v.Zytype = data.category
 		v.Save()
@@ -74,24 +74,7 @@ func (data *SpecialtyResponse) parse(resp *http.Response) (int, error) {
 	return strconv.Atoi(data.Total.Count)
 }
 
-func (p *SpecialtyResponse) sleep() {
-	sleep()
-}
-
-var sRecord = eRecord{0, ""}
-
-func (p *SpecialtyResponse) scores() (int, error) {
-	p.sleep()
-	uri := p.getURI()
-	resp, err := http.Get(uri)
-	log.Println(uri)
-	if err != nil {
-		log.Println("ERROR GET: ", uri, err)
-		if sRecord.isExit(uri) {
-			os.Exit(-1)
-		}
-		return p.scores()
-	}
-
-	return p.parse(resp)
+func (obj SpecialtyResponse) isExit() bool {
+	obj.execCount++
+	return obj.execCount >= 3
 }

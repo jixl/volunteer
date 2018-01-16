@@ -2,9 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 type SpecialtyScore struct {
@@ -40,16 +38,5 @@ func (bean SpecialtyScore) Save() string {
 		bean.Min = "--"
 	}
 
-	query := func(c *mgo.Collection) error {
-		log.Println(bean)
-		return c.Insert(bean)
-	}
-
-	err := witchCollection(bean.getTableName(), query)
-	if err != nil {
-		log.Println("ERROR INSERT:", bean.getTableName(), bean, err)
-		return "false"
-	}
-
-	return "true"
+	return save(bean)
 }
