@@ -8,14 +8,27 @@ import (
 	"time"
 )
 
+const firstPage = 1
+
 type (
 	total struct {
 		Count string `json:"num"`
 	}
+
+	category struct {
+		page  int
+		name  string
+		execs int
+	}
 )
 
+func (c category) isExit() bool {
+	c.execs++
+	return c.execs >= 3
+}
+
 func sleep() {
-	sleeps := [6]time.Duration{1, 2, 3, 2, 3, 1}
+	sleeps := [6]time.Duration{1, 2, 3, 2, 1, 2}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := r.Intn(6)
 

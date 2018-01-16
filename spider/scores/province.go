@@ -12,27 +12,24 @@ import (
 )
 
 type ProvinceResponse struct {
-	page      int
-	category  string
-	execCount int
-	Schools   []models.ProvinceScore `json:"school"`
-	Total     total                  `json:"totalRecord"`
+	category
+	Total  total                  `json:"totalRecord"`
+	Scores []models.ProvinceScore `json:"school"`
 }
 
 func Province() {
-	category := [...]string{"综合类", "理工类", "农林类", "医药类", "语言类", "财经类",
+	kinds := [...]string{"综合类", "理工类", "农林类", "医药类", "语言类", "财经类",
 		"医药类", "财经类", "政法类", "体育类", "艺术类", "民族类", "军事类", "其它",
 	}
 
-	for i := 0; i < len(category); i++ {
-		oneProvince(category[i])
+	for i := 0; i < len(kinds); i++ {
+		oneProvince(category{firstPage, kinds[i], 0})
 	}
 }
 
-func oneProvince(cate string) {
-	fPage := 1
-	pResp := ProvinceResponse{page: fPage, category: cate, execCount: 0}
-	count, err := spiderScores(pResp)
+func oneProvince(cate category) {
+	objResp := ProvinceResponse{category: cate}
+	count, err := spiderScores(objResp)
 	if err != nil {
 		log.Println("ERROR:", err)
 	}
@@ -40,10 +37,12 @@ func oneProvince(cate string) {
 	nums := (count / 50) + 1
 	log.Println(cate, nums, count)
 
-	for index := fPage + 1; index <= nums; index++ {
-		pResp = ProvinceResponse{page: index, category: cate, execCount: 0}
-		count, _ = spiderScores(pResp)
-		log.Println("Province", index, count)
+	for index := cate.page + 1; index <= nums; index++ {
+		cate.page = index
+		cate.execs = 0
+		objResp = ProvinceResponse{category: cate}
+		count, _ = spiderScores(objResp)
+		log.Println("Province", cate, count)
 	}
 }
 
@@ -52,9 +51,9 @@ func (obj ProvinceResponse) getURI() string {
 	uri := "http://data.api.gkcx.eol.cn/soudaxue/queryProvinceScore.html?messtype=json&size=50&page="
 	var uriBuf bytes.Buffer
 	uriBuf.WriteString(uri)
-	uriBuf.WriteString(strconv.Itoa(obj.page))
+	uriBuf.WriteString(strconv.Itoa(obj.category.page))
 	uriBuf.WriteString("&schoolproperty=")
-	uriBuf.WriteString(url.QueryEscape(obj.category))
+	uriBuf.WriteString(url.QueryEscape(obj.category.name))
 
 	return uriBuf.String()
 }
@@ -66,14 +65,10 @@ func (data ProvinceResponse) parse(resp *http.Response) (int, error) {
 		log.Println("ERROR DECODE:", err)
 		return 0, err
 	}
-	for _, v := range data.Schools {
-		v.SchoolType = data.category
+	for _, v := range data.Scores {
+		v.SchoolType = data.category.name
 		v.Save()
 	}
-	return strconv.Atoi(data.Total.Count)
-}
 
-func (obj ProvinceResponse) isExit() bool {
-	obj.execCount++
-	return obj.execCount >= 3
+	return strconv.Atoi(data.Total.Count)
 }

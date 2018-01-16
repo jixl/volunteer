@@ -12,39 +12,39 @@ import (
 )
 
 type SpecialtyResponse struct {
-	page      int
-	category  string
-	execCount int
-	Schools   []models.SpecialtyScore `json:"school"`
-	Total     total                   `json:"totalRecord"`
+	category
+	Total  total                   `json:"totalRecord"`
+	Scores []models.SpecialtyScore `json:"school"`
 }
 
 func Specialty() {
-	category := [...]string{"文学类", "理学类", "哲学类", "教育学类", "管理学类",
+	kinds := [...]string{"文学类", "理学类", "哲学类", "教育学类", "管理学类",
 		"经济学类", "农学", "工学类", "医学类", "历史学类", "艺术学类", "交通运输类",
 		"生化与药品类", "资源开发与测绘类", "材料与能源类", "土建类", "水利类", "制造类",
 		"电子信息类", "环保、气象与安全类", "财经类", "医药卫生类", "旅游类", "公共事业类",
 		"文化教育类", "艺术设计传媒类", "公安类", "轻纺食品类", "法律类",
 	}
 
-	for i := 0; i < len(category); i++ {
-		oneSpecialty(category[i])
+	for i := 0; i < len(kinds); i++ {
+		oneSpecialty(category{firstPage, kinds[i], 0})
 	}
 }
-func oneSpecialty(cate string) {
-	fPage := 1
-	sResp := SpecialtyResponse{page: fPage, category: cate, execCount:0}
-	count, err := spiderScores(sResp)
+func oneSpecialty(cate category) {
+	objResp := SpecialtyResponse{category: cate}
+	count, err := spiderScores(objResp)
 	if err != nil {
 		log.Println("ERROR:", err)
 	}
 
 	nums := (count / 50) + 1
 	log.Println(cate, nums, count)
-	for index := fPage + 1; index <= nums; index++ {
-		sResp = SpecialtyResponse{page: index, category: cate, execCount:0}
-		count, _ = spiderScores(sResp)
-		log.Println("Province", index, count)
+
+	for index := cate.page + 1; index <= nums; index++ {
+		cate.page = index
+		cate.execs = 0
+		objResp = SpecialtyResponse{category: cate}
+		count, _ = spiderScores(objResp)
+		log.Println("Province", cate, count)
 	}
 }
 
@@ -55,7 +55,7 @@ func (s SpecialtyResponse) getURI() string {
 	uriBuf.WriteString(uri)
 	uriBuf.WriteString(strconv.Itoa(s.page))
 	uriBuf.WriteString("&zytype=")
-	uriBuf.WriteString(url.QueryEscape(s.category))
+	uriBuf.WriteString(url.QueryEscape(s.category.name))
 
 	return uriBuf.String()
 }
@@ -67,14 +67,10 @@ func (data SpecialtyResponse) parse(resp *http.Response) (int, error) {
 		log.Println("ERROR DECODE:", err)
 		return 0, err
 	}
-	for _, v := range data.Schools {
-		v.Zytype = data.category
+	for _, v := range data.Scores {
+		v.Zytype = data.category.name
 		v.Save()
 	}
-	return strconv.Atoi(data.Total.Count)
-}
 
-func (obj SpecialtyResponse) isExit() bool {
-	obj.execCount++
-	return obj.execCount >= 3
+	return strconv.Atoi(data.Total.Count)
 }
