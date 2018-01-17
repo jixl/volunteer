@@ -19,7 +19,7 @@ type SpecialtyResponse struct {
 
 func Specialty() {
 	kinds := [...]string{"文学类", "理学类", "哲学类", "教育学类", "管理学类",
-		"经济学类", "农学", "工学类", "医学类", "历史学类", "艺术学类", "交通运输类",
+		"经济学类", "农学类", "工学类", "医学类", "历史学类", "艺术学类", "交通运输类",
 		"生化与药品类", "资源开发与测绘类", "材料与能源类", "土建类", "水利类", "制造类",
 		"电子信息类", "环保、气象与安全类", "财经类", "医药卫生类", "旅游类", "公共事业类",
 		"文化教育类", "艺术设计传媒类", "公安类", "轻纺食品类", "法律类",
@@ -37,19 +37,19 @@ func oneSpecialty(cate category) {
 	}
 
 	nums := (count / 50) + 1
-	log.Println(cate, nums, count)
+	log.Println("Specialty", cate, nums, count)
 
 	for index := cate.page + 1; index <= nums; index++ {
 		cate.page = index
 		cate.execs = 0
 		objResp = SpecialtyResponse{category: cate}
 		count, _ = spiderScores(objResp)
-		log.Println("Province", cate, count)
+		log.Println("Specialty", cate, count)
 	}
 }
 
 func (s SpecialtyResponse) getURI() string {
-	// http://data-gkcx.eol.cn/soudaxue/querySpecialtyScore.html?messtype=json&page=30
+	// "http://data-gkcx.eol.cn/soudaxue/querySpecialtyScore.html?messtype=json&size=50&page=30"
 	uri := "http://data.api.gkcx.eol.cn/soudaxue/querySpecialtyScore.html?messtype=json&size=50&page="
 	var uriBuf bytes.Buffer
 	uriBuf.WriteString(uri)
