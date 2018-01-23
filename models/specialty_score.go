@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type SpecialtyScore struct {
@@ -30,13 +31,25 @@ type SpecialtyScore struct {
 
 func (bean SpecialtyScore) getTableName() string { return "specialty_score" }
 
-func (bean SpecialtyScore) Save() string {
+func (bean *SpecialtyScore) beforeInsert() {
 	if isNeedReset(bean.Max) {
 		bean.Max = "--"
 	}
 	if isNeedReset(bean.Min) {
 		bean.Min = "--"
 	}
+	log.Println(bean)
+}
 
-	return save(bean)
+func FindSpecialty(query interface{}) []ProvinceScore {
+	var list = []ProvinceScore{}
+	ds := NewSessionStore()
+	defer ds.Close()
+	table := ProvinceScore{}.getTableName()
+	coll := ds.C(table)
+	err := coll.Find(query).Limit(20).All(&list)
+	if err != nil {
+		log.Println("Find Error ", query, table)
+	}
+	return list
 }

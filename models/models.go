@@ -20,45 +20,80 @@ var (
 	dataBase = "test"
 )
 
+func init() {
+	var err error
+	mgoSession, err = mgo.Dial(URL)
+	if err != nil {
+		panic(err) //直接终止程序运行
+	}
+	mgoSession.SetMode(mgo.Monotonic, true)
+}
+
+type SessionStore struct {
+	session *mgo.Session
+}
+
+//获取数据库的collection
+func (d *SessionStore) C(name string) *mgo.Collection {
+	return d.session.DB(dataBase).C(name)
+}
+
+//为每一HTTP请求创建新的DataStore对象
+func NewSessionStore() *SessionStore {
+	ds := &SessionStore{
+		session: mgoSession.Copy(),
+	}
+	return ds
+}
+
+func (d *SessionStore) Close() {
+	d.session.Close()
+}
+
+func GetErrNotFound() error {
+	return mgo.ErrNotFound
+}
+
+type Model interface {
+	getTableName() string
+	beforeInsert()
+}
+
+func Save(m Model) bool {
+	ds := NewSessionStore()
+	defer ds.Close()
+	m.beforeInsert()
+	err := ds.C(m.getTableName()).Insert(m)
+	if err != nil {
+		log.Println("ERROR INSERT:", m.getTableName(), m, err)
+		return false
+	}
+	return true
+}
+
 /**
  * 公共方法，获取session，如果存在则拷贝一份
  */
-func getSession() *mgo.Session {
-	if mgoSession == nil {
-		var err error
-		mgoSession, err = mgo.Dial(URL)
-		if err != nil {
-			panic(err) //直接终止程序运行
-		}
-		mgoSession.SetMode(mgo.Monotonic, true)
-	}
-	//最大连接池默认为4096
-	return mgoSession.Clone()
-}
+// func getSession() *mgo.Session {
+// 	if mgoSession == nil {
+// 		var err error
+// 		mgoSession, err = mgo.Dial(URL)
+// 		if err != nil {
+// 			panic(err) //直接终止程序运行
+// 		}
+// 		mgoSession.SetMode(mgo.Monotonic, true)
+// 	}
+// 	//最大连接池默认为4096
+// 	return mgoSession.Clone()
+// }
 
 //公共方法，获取collection对象
-func witchCollection(collection string, s func(*mgo.Collection) error) error {
-	session := getSession()
-	defer session.Close()
-	c := session.DB(dataBase).C(collection)
-	return s(c)
-}
-
-type model interface {
-	getTableName() string
-}
-
-func save(m model) string {
-	query := func(c *mgo.Collection) error { return c.Insert(m) }
-
-	err := witchCollection(m.getTableName(), query)
-	if err != nil {
-		log.Println("ERROR INSERT:", m.getTableName(), m, err)
-		return "false"
-	}
-
-	return "true"
-}
+// func witchCollection(collection string, s func(*mgo.Collection) error) error {
+// 	session := getSession()
+// 	defer session.Close()
+// 	c := session.DB(dataBase).C(collection)
+// 	return s(c)
+// }
 
 // /**
 //  * 获取一条记录通过objectid

@@ -4,14 +4,16 @@ import (
 	// "fmt"
 	// "io"
 	// "io/ioutil"
-	// "log"
-	// "net/http"
+	"log"
+	"net/http"
+	"os"
 	// "net/http/httptest"
 	// "net/http/httputil"
 	// "net/url"
 
 	// "volunteer/spider"
-	"github.com/jixl/volunteer/spider/scores"
+	// "github.com/jixl/volunteer/spider/scores"
+	"github.com/jixl/volunteer/web"
 )
 
 func main() {
@@ -20,22 +22,22 @@ func main() {
 	// 	fmt.Println(k, v)
 	// 	spider.RmUnuse(k)
 	// }
-	// var uri = "http://data.api.gkcx.eol.cn/soudaxue/queryProvinceScore.html?messtype=json&size=50&page="
-	// spider.ProxySpider(uri)
-	// fmt.Println(spider.ProxyServers);
 	// go scores.Province()
 	// go scores.Specialty()
-	scores.Specialty()
-	scores.Province()
-	// proxy()
+	// scores.Specialty()
+	// scores.Province()
 	// getIp("http://60.160.186.86:61234")
 	// start()
+	startWeb()
 }
 
-type tgo struct {
-	username string
-	age      int
-	address  string
+func startWeb() {
+	web.Routes()
+	err := http.ListenAndServe("localhost:8080", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe:", err)
+		os.Exit(-1)
+	}
 }
 
 // func proxy() {

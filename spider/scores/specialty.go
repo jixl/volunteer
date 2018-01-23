@@ -69,7 +69,7 @@ func (data SpecialtyResponse) parse(resp *http.Response) (int, error) {
 	}
 	for _, v := range data.Scores {
 		v.Zytype = data.category.name
-		v.Save()
+		models.Save(&v)
 	}
 
 	return strconv.Atoi(data.Total.Count)

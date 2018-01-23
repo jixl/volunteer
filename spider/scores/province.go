@@ -67,7 +67,7 @@ func (data ProvinceResponse) parse(resp *http.Response) (int, error) {
 	}
 	for _, v := range data.Scores {
 		v.SchoolType = data.category.name
-		v.Save()
+		models.Save(&v)
 	}
 
 	return strconv.Atoi(data.Total.Count)

@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type ProvinceScore struct {
@@ -27,7 +28,7 @@ type ProvinceScore struct {
 
 func (bean ProvinceScore) getTableName() string { return "province_score" }
 
-func (bean ProvinceScore) Save() string {
+func (bean *ProvinceScore) beforeInsert() {
 	if isNeedReset(bean.Max) {
 		bean.Max = "--"
 	}
@@ -37,6 +38,17 @@ func (bean ProvinceScore) Save() string {
 	if isNeedReset(bean.ProvinceScore) {
 		bean.ProvinceScore = nil
 	}
+}
 
-	return save(bean)
+func FindProvince(query interface{}) []ProvinceScore {
+	var list = []ProvinceScore{}
+	ds := NewSessionStore()
+	defer ds.Close()
+	table := ProvinceScore{}.getTableName()
+	coll := ds.C(table)
+	err := coll.Find(query).All(&list)
+	if err != nil {
+		log.Println("Find Error ", query, table)
+	}
+	return list
 }
