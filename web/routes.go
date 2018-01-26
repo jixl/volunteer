@@ -34,7 +34,7 @@ func parseParams(rw http.ResponseWriter, r *http.Request) {
 
 func queryProvince(rw http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	data := models.FindProvince(r.Form)
+	data := models.FindProvince(&models.SearchOption{Choice: r.Form})
 	rw.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(data)
 	// fmt.Println(data)
@@ -43,7 +43,7 @@ func queryProvince(rw http.ResponseWriter, r *http.Request) {
 
 func querySpecialty(rw http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	data := models.FindSpecialty(r.Form)
+	data := models.FindSpecialty(&models.SearchOption{Choice: r.Form})
 	rw.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(data)
 }

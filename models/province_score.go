@@ -40,13 +40,21 @@ func (bean *ProvinceScore) beforeInsert() {
 	}
 }
 
-func FindProvince(query interface{}) []ProvinceScore {
-	var list = []ProvinceScore{}
+func FindProvince(opts *SearchOption) []ProvinceScore {
 	ds := NewSessionStore()
 	defer ds.Close()
 	table := ProvinceScore{}.getTableName()
 	coll := ds.C(table)
-	err := coll.Find(query).All(&list)
+	query := coll.Find(opts.Choice)
+
+	skip := getSkip(opts.Page, opts.PageSize)
+	if skip > 0 {
+		query.Skip(skip)
+	}
+	query.Limit(getPageSize(opts.PageSize))
+
+	var list = []ProvinceScore{}
+	err := query.All(&list)
 	if err != nil {
 		log.Println("Find Error ", query, table)
 	}

@@ -71,6 +71,14 @@ func Save(m Model) bool {
 	return true
 }
 
+type SearchOption struct {
+	Choice   interface{}
+	Fields   interface{}
+	Sort     interface{}
+	Page     int
+	PageSize int
+}
+
 /**
  * 公共方法，获取session，如果存在则拷贝一份
  */

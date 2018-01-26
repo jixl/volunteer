@@ -41,13 +41,21 @@ func (bean *SpecialtyScore) beforeInsert() {
 	log.Println(bean)
 }
 
-func FindSpecialty(query interface{}) []ProvinceScore {
-	var list = []ProvinceScore{}
+func FindSpecialty(opts *SearchOption) []SpecialtyScore {
 	ds := NewSessionStore()
 	defer ds.Close()
-	table := ProvinceScore{}.getTableName()
+	table := SpecialtyScore{}.getTableName()
 	coll := ds.C(table)
-	err := coll.Find(query).Limit(20).All(&list)
+	query := coll.Find(opts.Choice)
+
+	skip := getSkip(opts.Page, opts.PageSize)
+	if skip > 0 {
+		query.Skip(skip)
+	}
+	query.Limit(getPageSize(opts.PageSize))
+
+	var list = []SpecialtyScore{}
+	err := query.All(&list)
 	if err != nil {
 		log.Println("Find Error ", query, table)
 	}
