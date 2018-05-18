@@ -10,9 +10,7 @@ import (
 	// "net/http/httptest"
 	// "net/http/httputil"
 	// "net/url"
-
 	// "volunteer/spider"
-	"github.com/jixl/volunteer/spider/scores"
 	"github.com/jixl/volunteer/web"
 )
 
@@ -22,12 +20,7 @@ func main() {
 	// 	fmt.Println(k, v)
 	// 	spider.RmUnuse(k)
 	// }
-	// go scores.Province()
-	// go scores.Specialty()
-	scores.Specialty()
-	scores.Province()
 	// getIp("http://60.160.186.86:61234")
-	// start()
 	startWeb()
 }
 

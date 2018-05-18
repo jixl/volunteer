@@ -41,13 +41,13 @@ func (bean *ProvinceScore) beforeInsert() {
 }
 
 func FindProvince(opts *SearchOption) []ProvinceScore {
+	skip := getSkip(opts.Page, opts.PageSize)
+	log.Println(opts.Choice)
 	ds := NewSessionStore()
 	defer ds.Close()
 	table := ProvinceScore{}.getTableName()
 	coll := ds.C(table)
 	query := coll.Find(opts.Choice)
-
-	skip := getSkip(opts.Page, opts.PageSize)
 	if skip > 0 {
 		query.Skip(skip)
 	}

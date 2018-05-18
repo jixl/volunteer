@@ -73,7 +73,7 @@ func crawl(uri string, puri string) *http.Response {
 		fmt.Printf("line-99:遇到了错误-并切换ip %s:%s:%s \n", uri, proxy, err)
 	}
 	// defer response.Body.Close()
-	scores.ParseProvinceScores(response)
+	scores.parse(response)
 	return response
 }
 

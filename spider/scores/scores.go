@@ -28,7 +28,7 @@ func (c category) isExit() bool {
 }
 
 func sleep() {
-	sleeps := [6]time.Duration{1, 2, 3, 2, 1, 2}
+	sleeps := [6]time.Duration{1, 2, 3, 1, 2, 1}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := r.Intn(6)
 

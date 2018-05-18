@@ -38,7 +38,6 @@ func (bean *SpecialtyScore) beforeInsert() {
 	if isNeedReset(bean.Min) {
 		bean.Min = "--"
 	}
-	log.Println(bean)
 }
 
 func FindSpecialty(opts *SearchOption) []SpecialtyScore {

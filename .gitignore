@@ -1,0 +1,13 @@
+log/
+.vscode/
+.idea/
+.DS_Store
+*.db
+*.log
+*.iml
+*.exe
+*.exe~
+output*
+*.sublime-project
+*.sublime-workspace
+debug
