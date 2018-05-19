@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"github.com/jixl/volunteer/models"
 	"github.com/jixl/volunteer/spider/scores"
 	"net/http"
@@ -72,10 +73,15 @@ func spiderRun(rw http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	spiderType := r.FormValue("spider")
 	data := map[string]string{"spider": spiderType}
+	page, err := strconv.Atoi(r.FormValue("page"))
+	if err != nil {
+		page = 1
+	}
 	if spiderType == "province" {
-		go scores.Province()
+		go scores.Province(page)
 	} else if spiderType == "specialty" {
-		go scores.Specialty()
+		cate := r.FormValue("category")
+		go scores.Specialty(cate, page)
 	} else {
 		data["error"] = "not has " + spiderType + " spider"
 	}

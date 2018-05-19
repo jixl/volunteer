@@ -26,7 +26,7 @@ func main() {
 
 func startWeb() {
 	web.Routes()
-	err := http.ListenAndServe("localhost:8080", nil)
+	err := http.ListenAndServe("127.0.0.1:8080", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 		os.Exit(-1)

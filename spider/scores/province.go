@@ -17,13 +17,16 @@ type ProvinceResponse struct {
 	Scores []models.ProvinceScore `json:"school"`
 }
 
-func Province() {
+func Province(page int) {
+	if page <= 0 {
+		page = firstPage
+	}
 	kinds := [...]string{"综合类", "理工类", "农林类", "医药类", "语言类", "财经类",
 		"医药类", "财经类", "政法类", "体育类", "艺术类", "民族类", "军事类", "其它",
 	}
 
 	for i := 0; i < len(kinds); i++ {
-		oneProvince(category{firstPage, kinds[i], 0})
+		oneProvince(category{page, kinds[i], 0})
 	}
 }
 

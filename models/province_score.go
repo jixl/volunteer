@@ -15,7 +15,7 @@ type ProvinceScore struct {
 	StudentType   string        `bson:"studenttype" json:"studenttype"`
 	Year          json.Number   `bson:"year" json:"year"`
 	Batch         string        `bson:"batch" json:"batch"`
-	Var           json.Number   `bson:"var" json:"var"`
+	Var           interface{}   `bson:"var" json:"var"`
 	VarScore      json.Number   `bson:"var_score" json:"var_score"`
 	Max           interface{}   `bson:"max" json:"max"`
 	Min           interface{}   `bson:"min" json:"min"`
@@ -29,6 +29,9 @@ type ProvinceScore struct {
 func (bean ProvinceScore) getTableName() string { return "province_score" }
 
 func (bean *ProvinceScore) beforeInsert() {
+	if isNeedReset(bean.Max) {
+		bean.Max = "--"
+	}
 	if isNeedReset(bean.Max) {
 		bean.Max = "--"
 	}

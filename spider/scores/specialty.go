@@ -17,7 +17,15 @@ type SpecialtyResponse struct {
 	Scores []models.SpecialtyScore `json:"school"`
 }
 
-func Specialty() {
+func Specialty(cate string, page int) {
+	if page <= 0 {
+		page = firstPage
+	}
+	if cate == "all" {
+		oneSpecialty(category{page, "", 0})
+		return
+	}
+
 	kinds := [...]string{"文学类", "理学类", "哲学类", "教育学类", "管理学类",
 		"经济学类", "农学类", "工学类", "医学类", "历史学类", "艺术学类", "交通运输类",
 		"生化与药品类", "资源开发与测绘类", "材料与能源类", "土建类", "水利类", "制造类",
@@ -26,7 +34,7 @@ func Specialty() {
 	}
 
 	for i := 0; i < len(kinds); i++ {
-		oneSpecialty(category{firstPage, kinds[i], 0})
+		oneSpecialty(category{page, kinds[i], 0})
 	}
 }
 func oneSpecialty(cate category) {
