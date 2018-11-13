@@ -77,11 +77,13 @@ func spiderRun(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		page = 1
 	}
+
+	year := r.FormValue("year")
 	if spiderType == "province" {
-		go scores.Province(page)
+		go scores.Province(year, page)
 	} else if spiderType == "specialty" {
 		cate := r.FormValue("category")
-		go scores.Specialty(cate, page)
+		go scores.Specialty(cate, year, page)
 	} else {
 		data["error"] = "not has " + spiderType + " spider"
 	}

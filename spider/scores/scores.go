@@ -16,6 +16,7 @@ type (
 	}
 
 	category struct {
+		year  string
 		page  int
 		name  string
 		execs int

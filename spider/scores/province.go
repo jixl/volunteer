@@ -17,16 +17,16 @@ type ProvinceResponse struct {
 	Scores []models.ProvinceScore `json:"school"`
 }
 
-func Province(page int) {
+func Province(year string, page int) {
 	if page <= 0 {
 		page = firstPage
 	}
 	kinds := [...]string{"综合类", "理工类", "农林类", "医药类", "语言类", "财经类",
-		"医药类", "财经类", "政法类", "体育类", "艺术类", "民族类", "军事类", "其它",
+		"医药类", "政法类", "体育类", "艺术类", "民族类", "军事类", "其它",
 	}
 
 	for i := 0; i < len(kinds); i++ {
-		oneProvince(category{page, kinds[i], 0})
+		oneProvince(category{year, page, kinds[i], 0})
 	}
 }
 
@@ -50,11 +50,12 @@ func oneProvince(cate category) {
 }
 
 func (obj ProvinceResponse) getURI() string {
-	// http://data-gkcx.eol.cn/soudaxue/queryProvinceScore.html?messtype=json&page=30
 	uri := "http://data.api.gkcx.eol.cn/soudaxue/queryProvinceScore.html?messtype=json&size=50&page="
 	var uriBuf bytes.Buffer
 	uriBuf.WriteString(uri)
 	uriBuf.WriteString(strconv.Itoa(obj.category.page))
+	uriBuf.WriteString("&fsyear=")
+	uriBuf.WriteString(obj.category.year)
 	uriBuf.WriteString("&schoolproperty=")
 	uriBuf.WriteString(url.QueryEscape(obj.category.name))
 

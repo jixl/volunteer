@@ -17,12 +17,12 @@ type SpecialtyResponse struct {
 	Scores []models.SpecialtyScore `json:"school"`
 }
 
-func Specialty(cate string, page int) {
+func Specialty(cate string, year string, page int) {
 	if page <= 0 {
 		page = firstPage
 	}
 	if cate == "all" {
-		oneSpecialty(category{page, "", 0})
+		oneSpecialty(category{year, page, "", 0})
 		return
 	}
 
@@ -34,7 +34,7 @@ func Specialty(cate string, page int) {
 	}
 
 	for i := 0; i < len(kinds); i++ {
-		oneSpecialty(category{page, kinds[i], 0})
+		oneSpecialty(category{year, page, kinds[i], 0})
 	}
 }
 func oneSpecialty(cate category) {
@@ -57,11 +57,12 @@ func oneSpecialty(cate category) {
 }
 
 func (s SpecialtyResponse) getURI() string {
-	// "http://data-gkcx.eol.cn/soudaxue/querySpecialtyScore.html?messtype=json&size=50&page=30"
 	uri := "http://data.api.gkcx.eol.cn/soudaxue/querySpecialtyScore.html?messtype=json&size=50&page="
 	var uriBuf bytes.Buffer
 	uriBuf.WriteString(uri)
 	uriBuf.WriteString(strconv.Itoa(s.page))
+	uriBuf.WriteString("&fsyear=")
+	uriBuf.WriteString(s.year)
 	uriBuf.WriteString("&zytype=")
 	uriBuf.WriteString(url.QueryEscape(s.category.name))
 
